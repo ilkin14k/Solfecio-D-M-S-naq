@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solfecio Sınaq İmtahanı — DİM formatı</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,700;1,500&family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1C2440;        /* mürəkkəb — əsas mətn */
+  --ink-soft:#5A6284;
+  --paper:#FCFCF9;      /* nota kağızı */
+  --line:#D9DBE6;
+  --cobalt:#2C4FD8;     /* aksent */
+  --cobalt-soft:#EBEFFC;
+  --ok:#1F7A4D;
+  --ok-soft:#E7F4EC;
+  --bad:#C03434;
+  --bad-soft:#FBEBEB;
+  --amber:#B8860B;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.5;
+}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 48px}
+
+/* ------- başlıq ------- */
+header{padding:18px 0 6px}
+.eyebrow{
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--cobalt);font-weight:800;
+}
+h1{
+  font-family:'Spectral',Georgia,serif;font-weight:700;
+  font-size:clamp(26px,6vw,34px);line-height:1.15;margin-top:6px;
+}
+.sub{color:var(--ink-soft);margin-top:8px;font-size:15px}
+
+/* ------- proqres ştatı (imza elementi) ------- */
+.progress-staff{margin:18px 0 6px}
+.progress-staff svg{width:100%;height:auto;display:block}
+.meta-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;color:var(--ink-soft);font-weight:600;margin-top:4px;
+}
+.meta-row .timer{font-variant-numeric:tabular-nums}
+
+/* ------- kartlar ------- */
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--radius);
+  padding:22px 18px;margin-top:16px;
+  box-shadow:0 1px 2px rgba(28,36,64,.04);
+}
+.section-tag{
+  display:inline-block;font-size:11px;font-weight:800;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--amber);
+  border:1px solid currentColor;border-radius:999px;padding:3px 10px;
+}
+.qnum{
+  font-family:'Spectral',Georgia,serif;font-weight:700;font-size:15px;
+  color:var(--ink-soft);margin-top:12px;
+}
+.qtext{
+  font-family:'Spectral',Georgia,serif;font-size:19px;font-weight:500;
+  margin-top:6px;line-height:1.45;
+}
+.qtext em{font-style:italic}
+.notation{
+  margin:16px 0 4px;padding:8px 4px;border-radius:10px;
+  background:var(--paper);border:1px dashed var(--line);
+  overflow-x:auto;
+}
+.notation svg{display:block;margin:0 auto;max-width:100%}
+
+/* ------- variantlar ------- */
+.opts{margin-top:14px;display:grid;gap:10px}
+.opt{
+  display:flex;align-items:flex-start;gap:12px;width:100%;
+  min-height:48px;padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--line);background:#fff;color:var(--ink);
+  font-family:inherit;font-size:15.5px;font-weight:600;text-align:left;
+  cursor:pointer;transition:border-color .15s,background .15s,transform .1s;
+}
+.opt:not(:disabled):hover{border-color:var(--cobalt);background:var(--cobalt-soft)}
+.opt:not(:disabled):active{transform:scale(.99)}
+.opt:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.opt .letter{
+  flex:0 0 26px;height:26px;border-radius:8px;display:flex;
+  align-items:center;justify-content:center;
+  background:var(--cobalt-soft);color:var(--cobalt);
+  font-weight:800;font-size:13px;margin-top:1px;
+}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .letter{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .letter{background:var(--bad);color:#fff}
+.opt:disabled{cursor:default;opacity:1}
+.opt:disabled:not(.correct):not(.wrong){opacity:.55}
+
+/* ------- izah ------- */
+.izah{
+  margin-top:14px;padding:14px 16px;border-radius:12px;font-size:14.5px;
+  border-left:4px solid var(--ok);background:var(--ok-soft);
+  animation:fadeUp .25s ease;
+}
+.izah.err{border-left-color:var(--bad);background:var(--bad-soft)}
+.izah b{font-weight:800}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.izah{animation:none}.opt{transition:none}}
+
+/* ------- naviqasiya ------- */
+.nav-row{display:flex;gap:10px;margin-top:18px}
+.btn{
+  flex:1;min-height:50px;border-radius:12px;border:none;cursor:pointer;
+  font-family:inherit;font-size:16px;font-weight:800;
+  transition:filter .15s,transform .1s;
+}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:3px solid var(--cobalt);outline-offset:2px}
+.btn-primary{background:var(--cobalt);color:#fff}
+.btn-primary:hover{filter:brightness(1.08)}
+.btn-primary:disabled{background:var(--line);color:var(--ink-soft);cursor:default}
+.btn-ghost{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.btn-ghost:hover{border-color:var(--cobalt)}
+
+/* ------- sual xəritəsi ------- */
+.qmap{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+.qdot{
+  width:34px;height:34px;border-radius:9px;border:1.5px solid var(--line);
+  background:#fff;font-family:inherit;font-size:12px;font-weight:700;
+  color:var(--ink-soft);cursor:pointer;
+}
+.qdot.now{border-color:var(--cobalt);color:var(--cobalt);box-shadow:0 0 0 2px var(--cobalt-soft)}
+.qdot.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.qdot.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+
+/* ------- başlanğıc / nəticə ------- */
+.hero-staff{margin:10px 0 4px}
+.start-list{margin-top:14px;display:grid;gap:8px}
+.start-list .row{
+  display:flex;justify-content:space-between;gap:12px;
+  padding:11px 14px;border-radius:10px;background:var(--paper);
+  border:1px solid var(--line);font-size:14.5px;font-weight:600;
+}
+.start-list .row span:last-child{color:var(--ink-soft);font-weight:700}
+.score-big{
+  font-family:'Spectral',Georgia,serif;font-weight:700;
+  font-size:clamp(44px,12vw,64px);line-height:1;margin-top:10px;
+}
+.score-big small{font-size:.4em;color:var(--ink-soft);font-weight:500}
+.verdict{margin-top:6px;font-size:16px;font-weight:700}
+.bars{margin-top:18px;display:grid;gap:12px}
+.bar-row .lbl{display:flex;justify-content:space-between;font-size:13.5px;font-weight:700;margin-bottom:5px}
+.bar-row .lbl span:last-child{color:var(--ink-soft)}
+.bar{height:9px;border-radius:99px;background:var(--paper);border:1px solid var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--cobalt);border-radius:99px}
+footer{margin-top:28px;text-align:center;font-size:12.5px;color:var(--ink-soft)}
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Musiqi nəzəriyyəsi və solfecio · DİM formatı</div>
+    <h1 id="page-title">Solfecio Sınaq İmtahanı</h1>
+    <p class="sub" id="page-sub">Qabiliyyət imtahanına hazırlıq üçün 32 orijinal sual — dərhal yoxlama və izahlarla.</p>
+  </header>
+
+  <!-- BAŞLANĞIC -->
+  <section id="screen-start">
+    <div class="card">
+      <div class="hero-staff" id="hero-staff" aria-hidden="true"></div>
+      <div class="start-list" id="start-list"></div>
+      <div class="nav-row">
+        <button class="btn btn-primary" id="btn-start">İmtahana başla</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUAL -->
+  <section id="screen-quiz" class="hidden">
+    <div class="progress-staff" id="progress-staff" aria-hidden="true"></div>
+    <div class="meta-row">
+      <span id="progress-text">Sual 1 / 32</span>
+      <span class="timer" id="timer">00:00</span>
+    </div>
+
+    <div class="card">
+      <span class="section-tag" id="q-section"></span>
+      <div class="qnum" id="q-num"></div>
+      <div class="qtext" id="q-text"></div>
+      <div class="notation hidden" id="q-notation"></div>
+      <div class="opts" id="q-opts" role="group" aria-label="Cavab variantları"></div>
+      <div class="izah hidden" id="q-izah"></div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="btn-prev">← Əvvəlki</button>
+        <button class="btn btn-primary" id="btn-next" disabled>Növbəti →</button>
+      </div>
+    </div>
+
+    <div class="qmap" id="qmap" aria-label="Sual xəritəsi"></div>
+  </section>
+
+  <!-- NƏTİCƏ -->
+  <section id="screen-result" class="hidden">
+    <div class="card">
+      <span class="section-tag">Nəticə</span>
+      <div class="score-big"><span id="score-num">0</span><small> / <span id="score-total">32</span></small></div>
+      <div class="verdict" id="verdict"></div>
+      <p class="sub" id="result-time"></p>
+      <div class="bars" id="section-bars"></div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="btn-retry-wrong">Səhvləri təkrar et</button>
+        <button class="btn btn-primary" id="btn-restart">Yenidən başla</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Hazırlıq məqsədlidir · DİM 2025 nümunəsi əsasında tərtib olunub</footer>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   1. NOTA RENDERİ — sadə SVG ştat çəkicisi (kənar asılılıq yoxdur)
+   ========================================================= */
+const STEP = 6;                 // yarım pillə (xətt arası = 12px)
+const LETTER_IDX = {C:0, D:1, E:2, F:3, G:4, A:5, H:6, B:6};
+const ACC_GLYPH  = {"b":"\u266D", "#":"\u266F", "n":"\u266E"};
+
+function noteIdx(name){        // "F4" -> diatonik indeks (E4 = 30, aşağı xətt)
+  const letter = name[0].toUpperCase();
+  const octave = parseInt(name.slice(1), 10);
+  return octave * 7 + LETTER_IDX[letter];
+}
+
+/* groups: [ [ {n:"C4", acc:"b"} , ... ] , ... ]  — hər qrup bir akkord/notdur */
+function renderNotation(container, groups, opts){
+  opts = opts || {};
+  const gapX   = opts.gapX || 58;
+  const startX = 66;
+  const width  = startX + groups.length * gapX + 26;
+  const topY   = 34, lineGap = 12;
+  const bottomLineY = topY + 4 * lineGap;      // E4 xətti
+  const yOf = idx => bottomLineY - (idx - 30) * STEP;
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${topY + 4*lineGap + 40}`);
+  svg.setAttribute("width", Math.min(width, 560));
+  svg.setAttribute("role", "img");
+
+  const line = (x1,y1,x2,y2,w) => {
+    const l = document.createElementNS(NS,"line");
+    l.setAttribute("x1",x1); l.setAttribute("y1",y1);
+    l.setAttribute("x2",x2); l.setAttribute("y2",y2);
+    l.setAttribute("stroke","#1C2440"); l.setAttribute("stroke-width", w || 1.1);
+    svg.appendChild(l);
+  };
+
+  for (let i = 0; i < 5; i++) line(8, topY + i*lineGap, width - 10, topY + i*lineGap);
+  line(width - 10, topY, width - 10, topY + 4*lineGap, 2.4);          // son xətt
+
+  const clef = document.createElementNS(NS,"text");                    // açar
+  clef.setAttribute("x", 14); clef.setAttribute("y", bottomLineY + 3);
+  clef.setAttribute("font-size", "58"); clef.setAttribute("fill", "#1C2440");
+  clef.textContent = "\uD834\uDD1E";                                   // 𝄞
+  svg.appendChild(clef);
+
+  groups.forEach((chord, gi) => {
+    const cx = startX + gi * gapX;
+    chord.forEach(note => {
+      const idx = noteIdx(note.n);
+      const cy  = yOf(idx);
+      for (let e = 28; e >= (idx % 2 === 0 ? idx : idx - 1); e -= 2)   // aşağı əlavə xətlər
+        if (idx < 30) line(cx - 12, yOf(e), cx + 12, yOf(e));
+      for (let e = 40; e <= (idx % 2 === 0 ? idx : idx + 1); e += 2)   // yuxarı əlavə xətlər
+        if (idx > 38) line(cx - 12, yOf(e), cx + 12, yOf(e));
+
+      const outer = document.createElementNS(NS,"ellipse");            // tam not
+      outer.setAttribute("cx",cx); outer.setAttribute("cy",cy);
+      outer.setAttribute("rx",7.6); outer.setAttribute("ry",5);
+      outer.setAttribute("fill","#1C2440");
+      svg.appendChild(outer);
+      const inner = document.createElementNS(NS,"ellipse");
+      inner.setAttribute("cx",cx); inner.setAttribute("cy",cy);
+      inner.setAttribute("rx",4.1); inner.setAttribute("ry",2.5);
+      inner.setAttribute("fill","#fff");
+      inner.setAttribute("transform",`rotate(-22 ${cx} ${cy})`);
+      svg.appendChild(inner);
+
+      if (note.acc){
+        const a = document.createElementNS(NS,"text");
+        a.setAttribute("x", cx - 20); a.setAttribute("y", cy + 5);
+        a.setAttribute("font-size","19"); a.setAttribute("fill","#1C2440");
+        a.textContent = ACC_GLYPH[note.acc];
+        svg.appendChild(a);
+      }
+    });
+  });
+
+  container.innerHTML = "";
+  container.appendChild(svg);
+}
+
+/* =========================================================
+   2. SUAL BAZASI — 32 orijinal sual, DİM strukturu üzrə
+   ========================================================= */
+const S = { INT:"İntervallar", AKK:"Akkordlar", LAD:"Qammalar və ladlar", RIT:"Ritm və ölçü", UMM:"Ümumi nəzəriyyə" };
+
+const QUESTIONS = [
+/* ---------- İNTERVALLAR ---------- */
+{ b:S.INT, q:"Verilmiş intervalı təyin edin.",
+  nota:[[{n:"F4"},{n:"H4"}]],
+  o:["x₄","art.₄","əsk.₅","b₃","x₅"], c:1,
+  izah:"F–H intervalı 3 tondan ibarətdir (triton). Hərf həcmi kvartadır, deməli bu, <b>artırılmış kvartadır (art.₄)</b>." },
+
+{ b:S.INT, q:"Verilmiş intervalı təyin edin.",
+  nota:[[{n:"H3"},{n:"F4"}]],
+  o:["x₅","art.₄","əsk.₅","k₆","x₄"], c:2,
+  izah:"H–F intervalı da 3 tondur, lakin hərf həcmi kvintadır — bu, <b>əskildilmiş kvintadır (əsk.₅)</b>. Art.₄ ilə enharmonik bərabərdir." },
+
+{ b:S.INT, q:"b₂ intervalı neçə yarımtondan ibarətdir?",
+  o:["1 yarımton","2 yarımton","3 yarımton","4 yarımton","yarım ton yoxdur"], c:1,
+  izah:"Böyük sekunda (b₂) <b>1 tona, yəni 2 yarımtona</b> bərabərdir. Kiçik sekunda (k₂) isə 1 yarımtondur." },
+
+{ b:S.INT, q:"k₃ intervalı natural major qammasının neçənci pillələrindən qurulur?",
+  o:["II, III, VI, VII","I, IV, V","I, II, III","IV, V, VII","II, IV, VI"], c:0,
+  izah:"Natural majorda kiçik tersiya <b>II, III, VI və VII</b> pillələrdən qurulur. I, IV, V pillələrdə isə böyük tersiya (b₃) yerləşir." },
+
+{ b:S.INT, q:"x₅ intervalı natural major qammasının hansı pilləsində qurulmur?",
+  o:["II","IV","V","VII","VI"], c:3,
+  izah:"<b>VII pillədə</b> xalis kvinta yox, əskildilmiş kvinta (əsk.₅) qurulur (məs., C-dur-da H–F)." },
+
+{ b:S.INT, q:"Harmonik minorda art.₂ intervalı hansı pillədə qurulur?",
+  o:["II","IV","VI","VII","V"], c:2,
+  izah:"Harmonik minorda VII pillənin yüksəldilməsi nəticəsində <b>VI pillə ilə VII pillə arasında art.₂</b> yaranır (məs., a-moll-da f–gis)." },
+
+{ b:S.INT, q:"x₄ intervalının çevrilməsi hansı intervaldır?",
+  o:["x₅","art.₄","k₅","əsk.₄","x₈"], c:0,
+  izah:"Çevrilmə zamanı kvarta kvintaya çevrilir, xalis interval xalis qalır: <b>x₄ → x₅</b>." },
+
+{ b:S.INT, q:"b₆ intervalının çevrilməsi hansı intervaldır?",
+  o:["b₃","k₃","x₃","k₆","b₂"], c:1,
+  izah:"Seksta tersiyaya çevrilir, böyük interval kiçiyə keçir: <b>b₆ → k₃</b>." },
+
+{ b:S.INT, q:"art.₄ intervalı ilə enharmonik bərabər olan interval hansıdır?",
+  o:["x₄","x₅","əsk.₅","k₅","b₄"], c:2,
+  izah:"Hər ikisi 3 tondan (tritondan) ibarətdir: <b>art.₄ = əsk.₅</b>. Səslənmə eynidir, yazılış fərqlidir." },
+
+{ b:S.INT, q:"art.₂ intervalı ilə enharmonik bərabər olan interval hansıdır?",
+  o:["b₂","k₃","b₃","x₃","k₂"], c:1,
+  izah:"Artırılmış sekunda 1,5 tondur — bu, <b>kiçik tersiyanın (k₃)</b> ton həcminə bərabərdir." },
+
+/* ---------- AKKORDLAR ---------- */
+{ b:S.AKK, q:"Verilmiş akkordu təyin edin.",
+  nota:[[{n:"C4"},{n:"E4",acc:"b"},{n:"G4"}]],
+  o:["B₃₅","K₃₅","Art.₃₅","Əsk.₃₅","B₆"], c:1,
+  izah:"c–es–g: aşağıda kiçik tersiya (c–es), yuxarıda böyük tersiya (es–g) — bu, <b>kiçik üçsəslidir (K₃₅)</b>." },
+
+{ b:S.AKK, q:"Verilmiş akkordu təyin edin.",
+  nota:[[{n:"G3"},{n:"H3"},{n:"D4"},{n:"F4"}]],
+  o:["K₇","D₇","B₆","K₆₄","Art.₃₅"], c:1,
+  izah:"g–h–d–f: böyük üçsəsli + kiçik septima — <b>dominantseptakkord (D₇)</b> quruluşudur (C-dur-un V pilləsi)." },
+
+{ b:S.AKK, q:"B₃₅ akkordunun interval tərkibi hansıdır?",
+  o:["k₃+b₃","b₃+k₃","b₃+b₃","k₃+k₃","b₃+x₄"], c:1,
+  izah:"Böyük üçsəsli aşağıdan yuxarıya <b>b₃ + k₃</b> kimi qurulur (məs., c–e–g)." },
+
+{ b:S.AKK, q:"Əsk.₃₅ akkordunun interval tərkibi hansıdır?",
+  o:["b₃+b₃","k₃+b₃","k₃+k₃","b₃+k₃","k₃+x₄"], c:2,
+  izah:"Əskildilmiş üçsəsli iki kiçik tersiyadan ibarətdir: <b>k₃ + k₃</b> (kənar səslər arasında əsk.₅)." },
+
+{ b:S.AKK, q:"B₆ akkordunun interval tərkibi hansıdır?",
+  o:["b₃+x₄","k₃+x₄","x₄+b₃","x₄+k₃","k₃+b₃"], c:1,
+  izah:"Böyük üçsəslinin sekstakkordu (I çevrilməsi): tersiya tonu basdadır, quruluşu <b>k₃ + x₄</b>-dür (məs., e–g–c)." },
+
+{ b:S.AKK, q:"K₆₄ akkordunun interval tərkibi hansıdır?",
+  o:["k₃+x₄","x₄+k₃","x₄+b₃","b₃+x₄","k₃+b₃"], c:1,
+  izah:"Kiçik üçsəslinin kvartsekstakkordu (II çevrilməsi): kvinta tonu basdadır, quruluşu <b>x₄ + k₃</b>-dür (məs., g–c–es)." },
+
+{ b:S.AKK, q:"D₇ akkordunun interval tərkibi hansıdır?",
+  o:["b₃+k₃+b₃","k₃+k₃+b₃","b₃+k₃+k₃","b₃+b₃+k₃","k₃+b₃+k₃"], c:2,
+  izah:"Dominantseptakkord: böyük üçsəsli + kiçik tersiya = <b>b₃ + k₃ + k₃</b> (kənar səslər arasında k₇)." },
+
+{ b:S.AKK, q:"D₇ akkordu major və harmonik minor tonallıqlarında neçənci pillədə qurulur?",
+  o:["I","IV","V","VII","II"], c:2,
+  izah:"Dominantseptakkord adından göründüyü kimi dominantada — <b>V pillədə</b> qurulur." },
+
+/* ---------- QAMMALAR VƏ LADLAR ---------- */
+{ b:S.LAD, q:"Harmonik minorda hansı pillə dəyişdirilir?",
+  o:["VI pillə yüksəldilir","VII pillə yüksəldilir","VII pillə alçaldılır","II pillə yüksəldilir","VI pillə alçaldılır"], c:1,
+  izah:"Harmonik minorda <b>VII pillə yarım ton yüksəldilir</b> — beləliklə yönəldici ton yaranır." },
+
+{ b:S.LAD, q:"Melodik minorda yuxarı hərəkət zamanı hansı pillələr yüksəldilir?",
+  o:["V və VI","VI və VII","IV və V","II və III","VII və I"], c:1,
+  izah:"Melodik minorda yuxarı hərəkətdə <b>VI və VII pillələr</b> yüksəldilir; aşağı hərəkətdə natural minor kimi səslənir." },
+
+{ b:S.LAD, q:"Harmonik majorda hansı pillə dəyişdirilir?",
+  o:["VI pillə alçaldılır","VII pillə yüksəldilir","VI pillə yüksəldilir","III pillə alçaldılır","II pillə alçaldılır"], c:0,
+  izah:"Harmonik majorda <b>VI pillə yarım ton alçaldılır</b> — bu, minor subdominanta rəngini verir." },
+
+{ b:S.LAD, q:"Verilmiş ladı təyin edin.",
+  nota:[[{n:"E4"}],[{n:"F4"}],[{n:"G4"}],[{n:"A4"}],[{n:"H4"}],[{n:"C5"}],[{n:"D5"}],[{n:"E5"}]],
+  notaOpts:{gapX:42},
+  o:["Dorik","Frigik","Lidik","Miksolidik","Macar ladı"], c:1,
+  izah:"e-dən e-yə ağ dillər üzrə qamma: I–II pillələr arasında yarımton var (e–f). Bu, <b>frigik laddır</b> (alçaldılmış II pilləli minor)." },
+
+{ b:S.LAD, q:"Dorik lad natural minordan hansı pilləsi ilə fərqlənir?",
+  o:["Alçaldılmış II","Yüksəldilmiş IV","Yüksəldilmiş VI","Alçaldılmış VII","Yüksəldilmiş III"], c:2,
+  izah:"Dorik lad = natural minor + <b>yüksəldilmiş VI pillə</b> (dorik seksta)." },
+
+{ b:S.LAD, q:"Lidik lad natural majordan hansı pilləsi ilə fərqlənir?",
+  o:["Alçaldılmış VII","Yüksəldilmiş IV","Alçaldılmış VI","Yüksəldilmiş V","Alçaldılmış II"], c:1,
+  izah:"Lidik lad = natural major + <b>yüksəldilmiş IV pillə</b> (lidik kvarta)." },
+
+{ b:S.LAD, q:"“f” səsi hansı major tonallığında yoxdur?",
+  o:["C-dur","F-dur","G-dur","B-dur","Es-dur"], c:2,
+  izah:"<b>G-dur</b>-un açar işarəsi fis-dir, ona görə də bu tonallıqda “f” (bekar) səsi yoxdur." },
+
+{ b:S.LAD, q:"c-moll-un paralel major tonallığı hansıdır?",
+  o:["C-dur","G-dur","As-dur","Es-dur","B-dur"], c:3,
+  izah:"Paralel tonallıqlar eyni açar işarələrinə malikdir. c-moll-un III pilləsindən qurulan <b>Es-dur</b> (3 bemol) onun paralelidir." },
+
+/* ---------- RİTM VƏ ÖLÇÜ ---------- */
+{ b:S.RIT, q:"Nöqtəli dördlük not (♩.) neçə səkkizlik notuna bərabərdir?",
+  o:["2","3","4","6","1,5"], c:1,
+  izah:"Nöqtə notun dəyərini yarısı qədər artırır: ♩. = ♩ + ♪ = <b>3 səkkizlik</b>." },
+
+{ b:S.RIT, q:"6/8 ölçüsü hansı ölçü növünə aiddir?",
+  o:["Sadə ölçü","Mürəkkəb ölçü","Qarışıq ölçü","Dəyişkən ölçü","Sərbəst ölçü"], c:1,
+  izah:"6/8 iki eyni sadə ölçünün (3/8 + 3/8) birləşməsidir — deməli <b>mürəkkəb ölçüdür</b> (iki güclü hissə: 1-ci və 4-cü)." },
+
+{ b:S.RIT, q:"Sinkopa nədir?",
+  o:["Tempin tədricən sürətlənməsi","Metrik vurğunun güclü hissədən zəif hissəyə keçməsi","İki notun liqa ilə birləşməsi","Ölçünün dəyişməsi","Pauzaların ardıcıllığı"], c:1,
+  izah:"Sinkopa — <b>vurğunun xanənin zəif hissəsinə keçməsidir</b>: zəif hissədə başlayan səs güclü hissədə davam edir." },
+
+/* ---------- ÜMUMİ NƏZƏRİYYƏ ---------- */
+{ b:S.UMM, q:"Qammanın IV pilləsi necə adlanır?",
+  o:["Medianta","Dominanta","Subdominanta","Submedianta","Tonika"], c:2,
+  izah:"IV pillə <b>subdominantadır</b>. (III — medianta, V — dominanta, VI — submedianta.)" },
+
+{ b:S.UMM, q:"Majorda VII pillə necə adlanır?",
+  o:["Tonika","Dominanta","Medianta","Yönəldici ton","Subdominanta"], c:3,
+  izah:"VII pillə tonikaya yarım ton məsafədə olub ona cəzb olunur — <b>yönəldici ton</b> adlanır." },
+
+{ b:S.UMM, q:"Açarında 3 diyez olan major tonallıq hansıdır?",
+  o:["D-dur","A-dur","E-dur","H-dur","G-dur"], c:1,
+  izah:"Diyezlər sırası: fis, cis, gis. 3 diyezli major — <b>A-dur</b>-dur (paraleli fis-moll)." },
+];
+
+/* =========================================================
+   3. TƏTBİQ MƏNTİQİ
+   ========================================================= */
+const $ = id => document.getElementById(id);
+let order = QUESTIONS.map((_, i) => i);   // aktiv sualların indeksləri
+let pos = 0;                              // orderin daxilindəki mövqe
+let answers = {};                         // qIndex -> seçilmiş variant
+let startTime = null, timerInt = null;
+
+function fmtTime(ms){
+  const s = Math.floor(ms/1000);
+  return String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+}
+
+/* ---- proqres ştatı: hər cavab ştat üzərində kiçik nota çevrilir ---- */
+function drawProgressStaff(){
+  const el = $("progress-staff");
+  const n = order.length;
+  const W = 640, H = 46, top = 8, gap = 7.5;
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  for (let i=0;i<5;i++){
+    const l = document.createElementNS(NS,"line");
+    l.setAttribute("x1",0); l.setAttribute("x2",W);
+    l.setAttribute("y1",top+i*gap); l.setAttribute("y2",top+i*gap);
+    l.setAttribute("stroke","#D9DBE6"); l.setAttribute("stroke-width",1);
+    svg.appendChild(l);
+  }
+  const span = W - 30;
+  order.forEach((qi, i) => {
+    const x = 15 + (n === 1 ? span/2 : i * span/(n-1));
+    const answered = answers[qi] !== undefined;
+    const yLevels = [top+4*gap, top+3*gap, top+2*gap, top+1*gap];
+    const y = yLevels[i % 4];
+    const c = document.createElementNS(NS,"ellipse");
+    c.setAttribute("cx",x); c.setAttribute("cy",y);
+    c.setAttribute("rx",4.4); c.setAttribute("ry",3.3);
+    c.setAttribute("transform",`rotate(-18 ${x} ${y})`);
+    if (answered){
+      c.setAttribute("fill", answers[qi] === QUESTIONS[qi].c ? "#1F7A4D" : "#C03434");
+    } else {
+      c.setAttribute("fill", i === pos ? "#2C4FD8" : "none");
+      c.setAttribute("stroke", i === pos ? "#2C4FD8" : "#B9BECF");
+      c.setAttribute("stroke-width","1.4");
+    }
+    svg.appendChild(c);
+  });
+  el.innerHTML = ""; el.appendChild(svg);
+}
+
+function drawHeroStaff(){
+  const el = $("hero-staff");
+  const NS = "http://www.w3.org/2000/svg";
+  const W = 640, H = 64, top = 12, gap = 9;
+  const svg = document.createElementNS(NS,"svg");
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`);
+  svg.setAttribute("width","100%");
+  for (let i=0;i<5;i++){
+    const l = document.createElementNS(NS,"line");
+    l.setAttribute("x1",0); l.setAttribute("x2",W);
+    l.setAttribute("y1",top+i*gap); l.setAttribute("y2",top+i*gap);
+    l.setAttribute("stroke","#D9DBE6");
+    svg.appendChild(l);
+  }
+  const clef = document.createElementNS(NS,"text");
+  clef.setAttribute("x",8); clef.setAttribute("y",top+4*gap+2);
+  clef.setAttribute("font-size","44"); clef.setAttribute("fill","#2C4FD8");
+  clef.textContent = "\uD834\uDD1E";
+  svg.appendChild(clef);
+  [88,150,212,274,336,398,460,522].forEach((x,i) => {
+    const y = top + 4*gap - (i%5)*gap/1.0 - ((i%2)? gap/2 : 0);
+    const e = document.createElementNS(NS,"ellipse");
+    e.setAttribute("cx",x); e.setAttribute("cy",Math.max(top, y));
+    e.setAttribute("rx",5.6); e.setAttribute("ry",4.1);
+    e.setAttribute("transform",`rotate(-18 ${x} ${y})`);
+    e.setAttribute("fill", i%3===0 ? "#2C4FD8" : "#1C2440");
+    svg.appendChild(e);
+  });
+  el.innerHTML = ""; el.appendChild(svg);
+}
+
+/* ---- ekranlar ---- */
+function show(screen){
+  ["screen-start","screen-quiz","screen-result"].forEach(id =>
+    $(id).classList.toggle("hidden", id !== screen));
+}
+
+function startExam(subset){
+  order = subset || QUESTIONS.map((_, i) => i);
+  pos = 0; answers = {};
+  startTime = Date.now();
+  clearInterval(timerInt);
+  timerInt = setInterval(() => { $("timer").textContent = fmtTime(Date.now() - startTime); }, 1000);
+  $("timer").textContent = "00:00";
+  show("screen-quiz");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const qi = order[pos];
+  const q  = QUESTIONS[qi];
+  $("q-section").textContent = q.b;
+  $("q-num").textContent = `Sual ${pos + 1}`;
+  $("q-text").innerHTML = q.q;
+  $("progress-text").textContent = `Sual ${pos + 1} / ${order.length}`;
+
+  const notaBox = $("q-notation");
+  if (q.nota){ notaBox.classList.remove("hidden"); renderNotation(notaBox, q.nota, q.notaOpts); }
+  else { notaBox.classList.add("hidden"); notaBox.innerHTML = ""; }
+
+  const optsBox = $("q-opts");
+  optsBox.innerHTML = "";
+  const chosen = answers[qi];
+  q.o.forEach((text, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerHTML = `<span class="letter">${"ABCDE"[i]}</span><span>${text}</span>`;
+    if (chosen !== undefined){
+      btn.disabled = true;
+      if (i === q.c) btn.classList.add("correct");
+      else if (i === chosen) btn.classList.add("wrong");
+    } else {
+      btn.addEventListener("click", () => answer(qi, i));
+    }
+    optsBox.appendChild(btn);
+  });
+
+  const izah = $("q-izah");
+  if (chosen !== undefined){
+    const ok = chosen === q.c;
+    izah.className = "izah" + (ok ? "" : " err");
+    izah.innerHTML = (ok ? "<b>Düzdür!</b> " : `<b>Səhvdir.</b> Doğru cavab: <b>${"ABCDE"[q.c]}</b>. `) + q.izah;
+    izah.classList.remove("hidden");
+  } else {
+    izah.classList.add("hidden");
+  }
+
+  $("btn-prev").disabled = pos === 0;
+  const nextBtn = $("btn-next");
+  nextBtn.disabled = chosen === undefined;
+  nextBtn.textContent = (pos === order.length - 1) ? "Nəticəni gör" : "Növbəti →";
+
+  renderQmap();
+  drawProgressStaff();
+}
+
+function answer(qi, i){
+  if (answers[qi] !== undefined) return;
+  answers[qi] = i;
+  renderQuestion();
+}
+
+function renderQmap(){
+  const box = $("qmap");
+  box.innerHTML = "";
+  order.forEach((qi, i) => {
+    const d = document.createElement("button");
+    d.className = "qdot";
+    d.textContent = i + 1;
+    if (answers[qi] !== undefined)
+      d.classList.add(answers[qi] === QUESTIONS[qi].c ? "ok" : "bad");
+    if (i === pos) d.classList.add("now");
+    d.addEventListener("click", () => { pos = i; renderQuestion(); });
+    box.appendChild(d);
+  });
+}
+
+function finish(){
+  clearInterval(timerInt);
+  const total = order.length;
+  const correct = order.filter(qi => answers[qi] === QUESTIONS[qi].c).length;
+  $("score-num").textContent = correct;
+  $("score-total").textContent = total;
+  const pct = Math.round(correct / total * 100);
+  const v = $("verdict");
+  if (pct >= 90){ v.textContent = "Əla nəticə! İmtahana hazırsan. 🎼"; v.style.color = "var(--ok)"; }
+  else if (pct >= 70){ v.textContent = "Yaxşı nəticə — zəif mövzuları bir də təkrar et."; v.style.color = "var(--cobalt)"; }
+  else if (pct >= 50){ v.textContent = "Orta nəticə. Aşağıdakı bölmələrə diqqət yetir."; v.style.color = "var(--amber)"; }
+  else { v.textContent = "Bu mövzuları yenidən işləmək lazımdır — səhvləri təkrar et."; v.style.color = "var(--bad)"; }
+  $("result-time").textContent = `Vaxt: ${fmtTime(Date.now() - startTime)} · Doğruluq: ${pct}%`;
+
+  const bySection = {};
+  order.forEach(qi => {
+    const q = QUESTIONS[qi];
+    bySection[q.b] = bySection[q.b] || { t:0, c:0 };
+    bySection[q.b].t++;
+    if (answers[qi] === q.c) bySection[q.b].c++;
+  });
+  const bars = $("section-bars");
+  bars.innerHTML = "";
+  Object.entries(bySection).forEach(([name, s]) => {
+    const row = document.createElement("div");
+    row.className = "bar-row";
+    const p = Math.round(s.c / s.t * 100);
+    row.innerHTML =
+      `<div class="lbl"><span>${name}</span><span>${s.c}/${s.t}</span></div>
+       <div class="bar"><i style="width:${p}%; background:${p>=70?"var(--ok)":p>=50?"var(--cobalt)":"var(--bad)"}"></i></div>`;
+    bars.appendChild(row);
+  });
+
+  const wrong = order.filter(qi => answers[qi] !== QUESTIONS[qi].c);
+  $("btn-retry-wrong").classList.toggle("hidden", wrong.length === 0);
+  show("screen-result");
+  window.scrollTo({ top: 0 });
+}
+
+/* ---- başlanğıc ekranı ---- */
+function buildStart(){
+  drawHeroStaff();
+  const counts = {};
+  QUESTIONS.forEach(q => counts[q.b] = (counts[q.b] || 0) + 1);
+  const list = $("start-list");
+  list.innerHTML = "";
+  Object.entries(counts).forEach(([name, n]) => {
+    const r = document.createElement("div");
+    r.className = "row";
+    r.innerHTML = `<span>${name}</span><span>${n} sual</span>`;
+    list.appendChild(r);
+  });
+}
+
+$("btn-start").addEventListener("click", () => startExam());
+$("btn-prev").addEventListener("click", () => { if (pos > 0){ pos--; renderQuestion(); } });
+$("btn-next").addEventListener("click", () => {
+  if (pos === order.length - 1) finish();
+  else { pos++; renderQuestion(); window.scrollTo({ top: 0, behavior: "smooth" }); }
+});
+$("btn-restart").addEventListener("click", () => startExam());
+$("btn-retry-wrong").addEventListener("click", () => {
+  const wrong = order.filter(qi => answers[qi] !== QUESTIONS[qi].c);
+  startExam(wrong);
+});
+
+buildStart();
+</script>
+</body>
+</html>
